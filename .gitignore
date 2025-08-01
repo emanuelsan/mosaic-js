@@ -1,0 +1,15 @@
+# macOS system files
+.DS_Store
+
+# Node.js
+node_modules/
+dist/
+
+# Windsurf configuration and workflows
+.windsurf/
+.windsurf
+
+# Environment variables and build files
+.env
+infra-config.json
+tsconfig.tsbuildinfo
