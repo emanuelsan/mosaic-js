@@ -6,6 +6,8 @@
 
 **Composable Markdown-based AI instruction engine for Node.js**
 
+[![NPM Version](https://img.shields.io/npm/v/@emanuelsan/mosaic-js.svg)](https://www.npmjs.com/package/@emanuelsan/mosaic-js)
+
 </div>
 
 Mosaic.js is a powerful template composition library that allows you to build complex, hierarchical instruction sets from modular Markdown files. Perfect for AI agents, documentation systems, and any scenario where you need to compose dynamic content from reusable templates.
