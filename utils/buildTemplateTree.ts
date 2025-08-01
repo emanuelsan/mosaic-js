@@ -1,21 +1,27 @@
 // Module Imports
-import Mustache from 'mustache';
-import { Effect, Console, pipe, Data, Context, Option } from 'effect';
+import Mustache from "mustache";
+import { Effect, Console, pipe, Data, Context, Option } from "effect";
+
+// Disable mustache's HTML escaping globally, as we are working with markdown
+Mustache.escape = (text) => text;
 
 // Util Imports
-import { parseMarkdown, extractReferencesFromContent } from './parseMarkdownTemplate';
-import { ParsedMarkdownTemplate } from './parseMarkdownTemplate';
+import {
+  parseMarkdown,
+  extractReferencesFromContent,
+} from "./parseMarkdownTemplate";
+import { ParsedMarkdownTemplate } from "./parseMarkdownTemplate";
 
 // Context Imports
-import { MosaicVariables } from '../Mosaic';
-import type { TemplateVariables } from '../utils/decodeVariables';
-import type { TemplateOverrides } from '../utils/decodeTemplateOverrides';
-import { normalizeOverridesPaths } from '../utils/normalizeOverridesPaths';
+import { MosaicVariables } from "../Mosaic";
+import type { TemplateVariables } from "../utils/decodeVariables";
+import type { TemplateOverrides } from "../utils/decodeTemplateOverrides";
+import { normalizeOverridesPaths } from "../utils/normalizeOverridesPaths";
 
 /**
  * Represents a node in the template tree structure.
  * Extends ParsedMarkdownTemplate with additional properties for tree traversal and loop detection.
- * 
+ *
  * @interface TemplateTreeNode
  * @extends ParsedMarkdownTemplate
  * @property {string} path - The relative path identifier for this template node
@@ -31,13 +37,13 @@ interface TemplateTreeNode extends ParsedMarkdownTemplate {
 /**
  * Error class for detecting and handling circular reference loops in template expansion.
  * Used when a template references itself directly or indirectly through ancestor chains.
- * 
+ *
  * @class LoopDetectedError
  * @extends Data.TaggedError
  * @property {string} path - The path where the loop was detected
  * @property {string} message - Descriptive error message about the loop
  */
-class LoopDetectedError extends Data.TaggedError('LoopDetectedError')<{
+class LoopDetectedError extends Data.TaggedError("LoopDetectedError")<{
   path: string;
   message: string;
 }> {}
@@ -45,14 +51,14 @@ class LoopDetectedError extends Data.TaggedError('LoopDetectedError')<{
 /**
  * Removes specified references from a template node's references array and content.
  * This function filters out unwanted references and removes their corresponding mustache syntax from the content.
- * 
+ *
  * @param {TemplateTreeNode} templateNode - The template node to process
  * @param {string[]} referencesToRemove - Array of reference paths to remove from the node
  * @returns {TemplateTreeNode} A new template node with the specified references removed from both the references array and content
  */
 const removeReferenceFromNode = (
   templateNode: TemplateTreeNode,
-  referencesToRemove: string[]
+  referencesToRemove: string[],
 ) => {
   /**
    * Utility function to escape regex special characters in a string.
@@ -60,15 +66,15 @@ const removeReferenceFromNode = (
    * @returns {string} The escaped string safe for use in regex patterns
    */
   const escapeRegExp = (str: string) =>
-    str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const newReferences = templateNode.references.filter(
-    (ref) => !referencesToRemove.includes(ref)
+    (ref) => !referencesToRemove.includes(ref),
   );
   let newContent = templateNode.content;
   for (const refToRemove of referencesToRemove) {
     // Remove all occurrences of {{ ...refToRemove... }} with arbitrary whitespace
-    const regex = new RegExp(`{{\\s*${escapeRegExp(refToRemove)}\\s*}}`, 'g');
-    newContent = newContent.replace(regex, '');
+    const regex = new RegExp(`{{\\s*${escapeRegExp(refToRemove)}\\s*}}`, "g");
+    newContent = newContent.replace(regex, "");
   }
   return { ...templateNode, references: newReferences, content: newContent };
 };
@@ -76,7 +82,7 @@ const removeReferenceFromNode = (
 /**
  * Filters out circular references from a template node to prevent infinite loops during expansion.
  * Detects and removes both self-references and ancestor loops, logging warnings for each removal.
- * 
+ *
  * @param {TemplateTreeNode} templateNode - The template node to check for circular references
  * @returns {Effect.Effect<TemplateTreeNode>} An Effect that yields a template node with all circular references removed
  */
@@ -91,7 +97,7 @@ const filterLoopedReferences = (templateNode: TemplateTreeNode) =>
     let filteredNode = templateNode;
     if (filteredNode.references.includes(currentPath)) {
       yield* Console.warn(
-        `[LoopDetectedError] Self-reference detected in references at ${currentPath}`
+        `[LoopDetectedError] Self-reference detected in references at ${currentPath}`,
       );
       yield* Console.warn(`Removing self-reference...`);
       filteredNode = removeReferenceFromNode(filteredNode, [currentPath]);
@@ -99,13 +105,13 @@ const filterLoopedReferences = (templateNode: TemplateTreeNode) =>
 
     // Check for ancestor loops and remove any references that would create cycles
     const loopedReferences = filteredNode.references.filter((ref) =>
-      ancestors.includes(ref)
+      ancestors.includes(ref),
     );
     if (loopedReferences.length > 0) {
       yield* Console.warn(
         `[LoopDetectedError] Loop detected in template! at ${currentPath} with references: ${loopedReferences.join(
-          ', '
-        )}`
+          ", ",
+        )}`,
       );
       yield* Console.warn(`Removing looped references...`);
       filteredNode = removeReferenceFromNode(filteredNode, loopedReferences);
@@ -129,12 +135,12 @@ const filterLoopedReferences = (templateNode: TemplateTreeNode) =>
  */
 export const getNodeFromSelector = (
   rootSelector: string,
-  ancestors: string[] = []
+  ancestors: string[] = [],
 ) =>
   pipe(
     parseMarkdown(rootSelector),
     Effect.map((templateNode) => ({ ...templateNode, ancestors })),
-    Effect.flatMap(filterLoopedReferences)
+    Effect.flatMap(filterLoopedReferences),
   );
 
 /**
@@ -142,7 +148,7 @@ export const getNodeFromSelector = (
  * Creates child TemplateTreeNode instances for each reference in the parent node,
  * passing the current ancestor chain for loop detection.
  * Each child's content is expanded with its own path-specific variables before attachment.
- * 
+ *
  * @param {TemplateTreeNode} rootNode - The parent node to attach children to
  * @returns {Effect.Effect<TemplateTreeNode>} An Effect that yields the parent node with populated children array
  */
@@ -152,17 +158,22 @@ const attachChildren = (rootNode: TemplateTreeNode) =>
     const children = yield* Effect.forEach(references, (ref) =>
       Effect.gen(function* () {
         // Get the child node
-        const childNode = yield* getNodeFromSelector(ref, [...rootNode.ancestors, rootNode.path]);
-        
+        const childNode = yield* getNodeFromSelector(ref, [
+          ...rootNode.ancestors,
+          rootNode.path,
+        ]);
+
         // Expand the child's content with its own path-specific variables
-        const childTemplateVariables = yield* extractTemplateVariables(childNode.path);
-        const expandedContent = yield* Effect.sync(() =>
-          Mustache.render(childNode.content, childTemplateVariables)
+        const childTemplateVariables = yield* extractTemplateVariables(
+          childNode.path,
         );
-        
+        const expandedContent = yield* Effect.sync(() =>
+          Mustache.render(childNode.content, childTemplateVariables),
+        );
+
         // Return child with expanded content
         return { ...childNode, content: expandedContent };
-      })
+      }),
     );
     return { ...rootNode, children };
   });
@@ -187,16 +198,18 @@ const expandAndFlattenRecursively = (node: TemplateTreeNode) =>
       currentNode = yield* flattenChildrenAndExpandContent(nodeWithChildren);
     }
 
-    return currentNode;
+    // Perform a final variable expansion on the fully composed content
+    const templateVariables = yield* extractTemplateVariables(currentNode.path);
+    const finalContent = Mustache.render(currentNode.content, templateVariables);
+
+    return { ...currentNode, content: finalContent };
   });
-
-
 
 /**
  * Extracts template variables from the MosaicVariables context and merges them with any overrides.
  * Returns a combined variables object that can be used for mustache templating.
  * Variable names are prefixed with '$' to match the template syntax (e.g., 'numberOfAttempts' becomes '$numberOfAttempts').
- * 
+ *
  * Path-specific overrides take precedence over global variables when the currentPath matches a normalized override key.
  *
  * @param currentPath - The current template path to check for overrides
@@ -206,7 +219,7 @@ const extractTemplateVariables = (currentPath: string) =>
   Effect.gen(function* () {
     // Try to get MosaicVariables from context, but don't fail if not provided
     const mosaicVariables = yield* Effect.serviceOption(MosaicVariables);
-    
+
     return Option.isNone(mosaicVariables)
       ? {} // No variables provided, return empty object
       : yield* Effect.gen(function* () {
@@ -216,25 +229,19 @@ const extractTemplateVariables = (currentPath: string) =>
           // Normalize override paths from ID/special syntax to relative paths
           // This converts keys like "#special-rules" to "general/rules/special-rules"
           const normalizedOverrides = yield* normalizeOverridesPaths(overrides);
-          
-          yield* Console.log(`Checking overrides for path: ${currentPath}`);
-          yield* Console.log('Normalized overrides:', normalizedOverrides);
 
           // Check if there are any overrides for the current path
           const pathOverrides = normalizedOverrides[currentPath] || {};
-          
+
           // Merge base variables with path-specific overrides (overrides take precedence)
           const mergedVariables = { ...variables, ...pathOverrides };
-          
+
           // Add $ prefix to variable names to match template syntax
           const prefixedVariables: Record<string, string | number> = {};
           for (const [key, value] of Object.entries(mergedVariables)) {
             prefixedVariables[`$${key}`] = value;
           }
-          
-          yield* Console.log(`Template variables for ${currentPath}:`);
-          yield* Console.log(prefixedVariables);
-          
+
           return prefixedVariables;
         });
   });
@@ -262,18 +269,15 @@ const flattenChildrenAndExpandContent = (rootNode: TemplateTreeNode) =>
       mustacheContext[child.path] = child.content;
     }
 
-    // Children content is already expanded with their own path-specific variables
-    // No need to extract additional template variables here
-    const combinedContext = mustacheContext;
+    // Extract template variables for the root node to expand its own content
+    const templateVariables = yield* extractTemplateVariables(rootNode.path);
 
-    yield* Console.log('The root node content is: ');
-    yield* Console.log(rootNode.content);
-    yield* Console.log('The combined mustache context is: ');
-    yield* Console.log(combinedContext);
+    // Combine children content and template variables for mustache context
+    const combinedContext = { ...templateVariables, ...mustacheContext };
 
     // Expand parent content using mustache with both children content and variables
     const expandedContent = yield* Effect.sync(() =>
-      Mustache.render(rootNode.content, combinedContext)
+      Mustache.render(rootNode.content, combinedContext),
     );
 
     // Extract and normalize references from the expanded content
@@ -305,5 +309,5 @@ const flattenChildrenAndExpandContent = (rootNode: TemplateTreeNode) =>
 export const buildTemplateTree = (rootSelector: string) =>
   pipe(
     getNodeFromSelector(rootSelector),
-    Effect.andThen(expandAndFlattenRecursively)
+    Effect.andThen(expandAndFlattenRecursively),
   );
