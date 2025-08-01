@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import pc from 'picocolors';
+
 
 /**
  * Searches for a markdown file in a directory tree whose frontmatter id matches the given id.
@@ -37,7 +37,7 @@ export function findMarkdownFileById(rootDir: string, id: string): string | unde
   }
   // If there are multiple matches, return the first one but warn the user
   if (matches.length > 1) {
-    console.log(pc.yellow(`Warning: Multiple markdown files found with id '#${id}'.\nReturning the first one: ${matches[0]}`));
+        console.warn(`Warning: Multiple markdown files found with id '#${id}'.\nReturning the first one: ${matches[0]}`);
   }
   return matches[0];
 }
