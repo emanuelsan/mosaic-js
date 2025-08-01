@@ -9,8 +9,6 @@ import { findMarkdownFileById } from "./findMarkdownFileById";
 import { TemplateSelectorType } from "../types/TemplateSelectorType";
 import { Directory } from "./normalizeToRelativeSelector";
 
-
-
 export const getTemplateContent = ({
   templateSelector,
   type,
@@ -30,7 +28,6 @@ export const getTemplateContent = ({
         console.error(`${templateSelector} does not exist. Returning null.`);
         return null;
       }
-      console.log(`getTemplateContent: ${templateSelector} exists`);
       const templateContent = fs.readFileSync(foundPath, "utf-8");
 
       return templateContent;
@@ -49,6 +46,5 @@ export const getTemplateContent = ({
       return null;
     }
 
-    console.log(`getTemplateContent: ${templateSelector} exists`);
     return fs.readFileSync(templatePath, "utf-8");
   });

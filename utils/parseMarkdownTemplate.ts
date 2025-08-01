@@ -23,15 +23,6 @@ const parseFrontmatter = (templateContent: string) =>
       Object.keys(parsed.data).length > 0 ? parsed.data : null;
     const content = parsed.content;
 
-    yield* Effect.scoped(
-      Effect.gen(function* () {
-        yield* Console.group({ label: "→ parseFrontmatter" });
-        yield* Console.log(frontmatter);
-        yield* Console.log(content);
-        yield* Console.log('← -------------------------')
-      }),
-    );
-
     return { frontmatter, content };
   });
 
@@ -55,7 +46,7 @@ export const extractReferencesFromContent = (
     ancestors?: string[];
     removeLoopedReferences?: boolean;
     normalizeInContent?: boolean;
-  } = {}
+  } = {},
 ) =>
   Effect.gen(function* () {
     const {
@@ -67,7 +58,8 @@ export const extractReferencesFromContent = (
 
     const referenceRegex = /\{\{\s*([^\}]+)\s*\}\}/g;
     let match: RegExpExecArray | null;
-    const replacements: { start: number; end: number; replacement: string }[] = [];
+    const replacements: { start: number; end: number; replacement: string }[] =
+      [];
     const normalizedReferences: string[] = [];
     const referencesToRemove: string[] = [];
     let updatedContent = content;
@@ -84,14 +76,14 @@ export const extractReferencesFromContent = (
         if (removeLoopedReferences && currentPath) {
           if (normalizedRef === currentPath) {
             yield* Console.warn(
-              `[LoopDetectedError] Self-reference detected in content at ${currentPath}`
+              `[LoopDetectedError] Self-reference detected in content at ${currentPath}`,
             );
             yield* Console.warn(`Removing self-reference: ${ref}`);
             referencesToRemove.push(ref);
             continue;
           } else if (ancestors.includes(normalizedRef)) {
             yield* Console.warn(
-              `[LoopDetectedError] Ancestor loop detected in content at ${currentPath} with reference: ${normalizedRef}`
+              `[LoopDetectedError] Ancestor loop detected in content at ${currentPath} with reference: ${normalizedRef}`,
             );
             yield* Console.warn(`Removing looped reference: ${ref}`);
             referencesToRemove.push(ref);
@@ -115,24 +107,24 @@ export const extractReferencesFromContent = (
     // Remove any self-references or looped references from content
     if (removeLoopedReferences && referencesToRemove.length > 0) {
       const escapeRegExp = (str: string) =>
-        str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       for (const refToRemove of referencesToRemove) {
         const regex = new RegExp(
           `\\{\\{\\s*${escapeRegExp(refToRemove)}\\s*\\}\\}`,
-          'g'
+          "g",
         );
-        updatedContent = updatedContent.replace(regex, '');
+        updatedContent = updatedContent.replace(regex, "");
       }
     }
 
     // Replace all references in content with normalized versions (from last to first to not mess up indices)
     if (normalizeInContent && replacements.length > 0) {
-      let contentArr = updatedContent.split('');
+      let contentArr = updatedContent.split("");
       for (let i = replacements.length - 1; i >= 0; i--) {
         const { start, end, replacement } = replacements[i];
         contentArr.splice(start, end - start, replacement);
       }
-      updatedContent = contentArr.join('');
+      updatedContent = contentArr.join("");
     }
 
     return {
@@ -149,10 +141,10 @@ const extractAndNormalizeReferences = ({
   content: string;
 }) =>
   Effect.gen(function* () {
-    const { references, content: newContent } = yield* extractReferencesFromContent(
-      content,
-      { normalizeInContent: true }
-    );
+    const { references, content: newContent } =
+      yield* extractReferencesFromContent(content, {
+        normalizeInContent: true,
+      });
 
     return {
       ...rest,
