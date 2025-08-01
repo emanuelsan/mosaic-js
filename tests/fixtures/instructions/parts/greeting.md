@@ -1,0 +1,1 @@
+This is a greeting from a partial.
