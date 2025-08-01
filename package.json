@@ -1,17 +1,36 @@
 {
-  "name": "mosaic-js",
+  "name": "@emanuelsan/mosaic-js",
   "version": "0.1.0",
   "description": "Composable Markdown-based AI instruction engine for Node.js",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "echo \"No tests yet\" && exit 0"
   },
-  "author": "",
+  "author": "Emanuel Sandu",
   "license": "MIT",
+  "keywords": [
+    "template",
+    "markdown",
+    "ai",
+    "instruction",
+    "composition",
+    "modular",
+    "hierarchical",
+    "mustache",
+    "effect"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emanuelsan/mosaic-js.git"
+  },
+  "homepage": "https://github.com/emanuelsan/mosaic-js#readme",
+  "bugs": {
+    "url": "https://github.com/emanuelsan/mosaic-js/issues"
+  },
   "dependencies": {
-    "@types/mustache": "^4.2.6",
     "effect": "^3.16.16",
     "fast-glob": "^3.3.3",
     "gray-matter": "^4.0.3",
@@ -20,6 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.12",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@types/mustache": "^4.2.6"
   }
 }
