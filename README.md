@@ -267,6 +267,18 @@ You have {{ $attemptsRemaining }} attempts left.
 {{ $customInstructions }}
 ```
 
+> **Note on Variable Syntax:**
+> 
+> While template variables are defined with a `$` prefix (e.g., `{{ $variableName }}`), you should provide them in your configuration **without** the `$` prefix. Mosaic automatically strips the `$` from the template before matching it with the provided variable keys.
+> 
+> For example, to provide a value for `{{ $userName }}`, you would use the key `userName` in your `provideVariables` or `provideOverrides` call:
+> 
+> ```typescript
+> instructions.provideVariables({
+>   userName: 'Alice', // Correct: no dollar sign
+> });
+> ```
+
 ## How It Works
 
 1. **Template Discovery**: Mosaic scans your directory and indexes all `.md` files
