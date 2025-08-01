@@ -1,6 +1,6 @@
 {
   "name": "@emanuelsan/mosaic-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Composable Markdown-based AI instruction engine for Node.js",
   "type": "module",
   "main": "dist/index.js",
@@ -36,7 +36,6 @@
     "fast-glob": "^3.3.3",
     "gray-matter": "^4.0.3",
     "mustache": "^4.2.0"
-
   },
   "devDependencies": {
     "@types/node": "^24.0.12",
