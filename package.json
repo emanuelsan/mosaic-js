@@ -1,0 +1,25 @@
+{
+  "name": "mosaic-js",
+  "version": "0.1.0",
+  "description": "Composable Markdown-based AI instruction engine for Node.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@types/mustache": "^4.2.6",
+    "effect": "^3.16.16",
+    "fast-glob": "^3.3.3",
+    "gray-matter": "^4.0.3",
+    "mustache": "^4.2.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.12",
+    "typescript": "^5.8.3"
+  }
+}
