@@ -7,7 +7,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "author": "Emanuel Sandu",
   "license": "MIT",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@types/node": "^24.0.12",
     "typescript": "^5.8.3",
-    "@types/mustache": "^4.2.6"
+    "@types/mustache": "^4.2.6",
+    "vitest": "^2.0.4"
   }
 }
