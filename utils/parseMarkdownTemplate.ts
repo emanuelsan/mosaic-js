@@ -12,7 +12,7 @@ export interface ParsedMarkdownTemplate {
 }
 
 // Step 1: Get the file content
-const getContent = (templateSelector: string) =>
+const getContentRelative = (templateSelector: string) =>
   getTemplateContent({ templateSelector, type: "relative" });
 
 // Step 2: Parse frontmatter
@@ -156,13 +156,25 @@ const extractAndNormalizeReferences = ({
 // Main Exportable Program
 export const parseMarkdown = (templateSelector: string) =>
   pipe(
-    getContent(templateSelector),
-    Effect.filterOrElse(
-      (content) => content !== null,
-      () => Effect.fail(null),
-    ),
-    Effect.flatMap(parseFrontmatter),
-    Effect.flatMap(extractVariables),
-    Effect.flatMap(extractAndNormalizeReferences),
-    Effect.map((templateNode) => ({ ...templateNode, path: templateSelector })),
+    getContentRelative(templateSelector),
+    Effect.flatMap((content) =>
+      Effect.if(content !== null, {
+        onTrue: () =>
+          pipe(
+            Effect.succeed(content as string), // Type assertion since we know content is not null; This might be solved by using branded types (unsure)
+            Effect.flatMap(parseFrontmatter),
+            Effect.flatMap(extractVariables),
+            Effect.flatMap(extractAndNormalizeReferences),
+            Effect.map((templateNode) => ({ ...templateNode, path: templateSelector })),
+          ),
+        onFalse: () =>
+          Effect.succeed({
+            path: templateSelector,
+            frontmatter: null,
+            content: '',
+            variables: [],
+            references: [],
+          }),
+      })
+    )
   );

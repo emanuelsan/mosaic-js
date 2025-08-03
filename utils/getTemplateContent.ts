@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 
-import { Effect } from "effect";
+import { Effect, Console } from "effect";
 
 import { findMarkdownFileById } from "./findMarkdownFileById";
 
@@ -9,6 +9,10 @@ import { findMarkdownFileById } from "./findMarkdownFileById";
 import { TemplateSelectorType } from "../types/TemplateSelectorType";
 import { Directory } from "./normalizeToRelativeSelector";
 
+// TODO: Write documentation for this function
+// This function should respect the principle of graceful degradation
+// If a template is not found, it should return null instead of throwing an error
+// At the same time, it should log a warning to the console
 export const getTemplateContent = ({
   templateSelector,
   type,
@@ -25,7 +29,9 @@ export const getTemplateContent = ({
       const id = templateSelector.slice(1); // remove '#'
       const foundPath = findMarkdownFileById(instructionsDir, id);
       if (!foundPath) {
-        console.error(`${templateSelector} does not exist. Returning null.`);
+        yield* Console.warn(
+          `"${templateSelector}" does not exist. Returning null...`,
+        );
         return null;
       }
       const templateContent = fs.readFileSync(foundPath, "utf-8");
@@ -42,7 +48,9 @@ export const getTemplateContent = ({
     // Retrieve content for type relative
     const templatePath = path.join(instructionsDir, selectorPath + ".md");
     if (!fs.existsSync(templatePath)) {
-      console.error(`${templateSelector} does not exist. Returning null.`);
+      yield* Console.warn(
+        `"${templateSelector}" does not exist. Returning null...`,
+      );
       return null;
     }
 
