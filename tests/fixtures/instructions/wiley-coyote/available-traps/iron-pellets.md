@@ -1,0 +1,4 @@
+## 1. Iron Pellets and A Magnet
+One of fans' favorite shorts, "Beep Prepared," became a classic after its release in 1961 as part of the Merrie Melodies series. After learning the Road Runner stops to eat the birdseed he puts out, Wile E. Coyote uses this to his advantage, and uses a box of ACME Iron Bird Seed as bait.
+
+Ready to capture the Road Runner, Wile E. Coyote has a pair of roller skates on, and attaches a magnet to himself, which allows him to be pulled toward the Road Runner constantly. Wile E. Coyote's plan actually works for a while until the Road Runner changes course, and Wile E. Coyote's magnet pulls him into a train.

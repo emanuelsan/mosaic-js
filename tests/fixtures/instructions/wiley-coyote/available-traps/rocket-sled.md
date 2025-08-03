@@ -1,0 +1,4 @@
+## 2. Rocket Sled
+Using more of ACME's notorious tools, Wile E. Coyote gives his classic dynamite rocket another try by building a high-tech rocket-sled that uses railroad tracks to help direct him towards the Road Runner. In Merrie Melodies' short "Beep Prepared," Wile E. Coyote orders ACME's Little Giant DIY Rocket-Sled Kit, and successfully builds it.
+
+Unfortunately for Wile E. Coyote, the same thing that happened to his dynamite rocket happens again, and rather than stay on track, his ACME Rocket-Sled shoots him straight up into the sky. Despite its directional flaw, the Rocket-Sled itself is very powerful, and if Wile E. Coyote were to work out a few tweaks, he might be able to catch the Road Runner.
