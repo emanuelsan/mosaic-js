@@ -1,6 +1,6 @@
 {
   "name": "@emanuelsan/mosaic-js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Composable Markdown-based AI instruction engine for Node.js",
   "type": "module",
   "main": "dist/index.js",
